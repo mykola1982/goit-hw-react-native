@@ -60,7 +60,8 @@ export const RegistrationScreen = () => {
           source={require("../assets/images/photo_bg.jpg")}
         >
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === "ios" ? "padding" : ""}
+            keyboardVerticalOffset={0}
           >
             <View
               style={{
