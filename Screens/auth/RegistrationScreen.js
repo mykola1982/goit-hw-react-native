@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import Avatar from "../../components/Avatar/Avatar";
-import { commonStyle } from "./commonStyle";
+import { authStyle } from "./authStyle";
 
 const initialState = {
   login: "",
@@ -75,18 +75,18 @@ export const RegistrationScreen = () => {
                 </View>
               </View>
 
-              <Text style={{ ...commonStyle.title, marginBottom: 32 }}>
+              <Text style={{ ...authStyle.title, marginBottom: 32 }}>
                 Реєстрація
               </Text>
 
               <View
                 style={[
-                  commonStyle.inputWrapper,
-                  hasFocus.login && commonStyle.inputWrapperFocus,
+                  authStyle.inputWrapper,
+                  hasFocus.login && authStyle.inputWrapperFocus,
                 ]}
               >
                 <TextInput
-                  style={commonStyle.input}
+                  style={authStyle.input}
                   textAlign={"left"}
                   placeholder={"Логін"}
                   onFocus={() => {
@@ -103,13 +103,13 @@ export const RegistrationScreen = () => {
 
               <View
                 style={[
-                  commonStyle.inputWrapper,
-                  hasFocus.email && commonStyle.inputWrapperFocus,
+                  authStyle.inputWrapper,
+                  hasFocus.email && authStyle.inputWrapperFocus,
                   { marginTop: 16 },
                 ]}
               >
                 <TextInput
-                  style={commonStyle.input}
+                  style={authStyle.input}
                   textAlign={"left"}
                   placeholder={"Адреса електронної пошти"}
                   onFocus={() => {
@@ -126,14 +126,14 @@ export const RegistrationScreen = () => {
 
               <View
                 style={[
-                  commonStyle.inputWrapper,
-                  hasFocus.password && commonStyle.inputWrapperFocus,
+                  authStyle.inputWrapper,
+                  hasFocus.password && authStyle.inputWrapperFocus,
                   { marginTop: 16 },
                 ]}
               >
                 <View style={{ flex: 1 }}>
                   <TextInput
-                    style={commonStyle.input}
+                    style={authStyle.input}
                     textAlign={"left"}
                     placeholder={"Пароль"}
                     secureTextEntry={secure}
@@ -155,7 +155,7 @@ export const RegistrationScreen = () => {
                 <View>
                   <TouchableOpacity
                     activeOpacity={0.7}
-                    style={commonStyle.btnInput}
+                    style={authStyle.btnInput}
                     onPress={() => {
                       setSecure(false);
                     }}
@@ -170,16 +170,16 @@ export const RegistrationScreen = () => {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     style={{
-                      ...commonStyle.btn,
+                      ...authStyle.btn,
                       marginBottom: 16,
                       marginTop: 43,
                     }}
                     onPress={onSubmit}
                   >
-                    <Text style={commonStyle.btnTitle}>Зареєструватися</Text>
+                    <Text style={authStyle.btnTitle}>Зареєструватися</Text>
                   </TouchableOpacity>
 
-                  <View style={commonStyle.text}>
+                  <View style={authStyle.text}>
                     <Text>
                       Вже є акаунт? <Text>Увійти</Text>
                     </Text>

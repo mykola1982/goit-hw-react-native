@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const commonStyle = StyleSheet.create({
+export const authStyle = StyleSheet.create({
   title: {
     fontFamily: "Roboto-Medium",
     fontSize: 30,
