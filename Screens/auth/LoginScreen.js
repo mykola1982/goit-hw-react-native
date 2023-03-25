@@ -13,7 +13,7 @@ import {
   Image,
 } from "react-native";
 
-import Avatar from "../components/Avatar/Avatar";
+import Avatar from "../../components/Avatar/Avatar";
 import { commonStyle } from "./commonStyle";
 
 const initialState = {
@@ -57,7 +57,7 @@ export const LoginScreen = () => {
       <View style={styles.container}>
         <ImageBackground
           style={styles.bg}
-          source={require("../assets/images/photo_bg.jpg")}
+          source={require("../../assets/images/photo_bg.jpg")}
         >
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : ""}
