@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 
-import * as Font from "expo-font";
-import { RegistrationScreen } from "./Screens/auth/RegistrationScreen";
-import { LoginScreen } from "./Screens/auth/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+
+import useRoute from "./router";
 
 export default function App() {
   const [fontsLoader] = useFonts({
@@ -27,10 +27,7 @@ export default function App() {
     SplashScreen.hideAsync();
   }
 
-  return (
-    <>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
-    </>
-  );
+  const routing = useRoute({});
+
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }

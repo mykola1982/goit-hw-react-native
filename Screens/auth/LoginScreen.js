@@ -21,7 +21,7 @@ const initialState = {
 
 const initFocus = { email: false, password: false };
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [secure, setSecure] = useState(true);
@@ -151,7 +151,10 @@ export const LoginScreen = () => {
 
                     <View style={authStyle.text}>
                       <Text>
-                        Немає акаунта? <Text>Зареєструватися</Text>
+                        Немає акаунта?{" "}
+                        <Text onPress={() => navigation.navigate("Register")}>
+                          Зареєструватися
+                        </Text>
                       </Text>
                     </View>
                   </>
