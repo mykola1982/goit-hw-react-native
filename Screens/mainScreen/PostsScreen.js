@@ -48,7 +48,9 @@ export const PostsScreen = () => {
 
           headerRight: () => (
             <View
-              style={{ marginRight: 20 }}
+              style={{
+                marginRight: 20,
+              }}
               onPress={() => alert("This is a button logout!")}
             >
               <Feather name="log-out" size={24} color="#BDBDBD" />
