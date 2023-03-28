@@ -80,7 +80,7 @@ export default function useRoute(isAuth) {
         name="Map"
         component={MapScreen}
         options={{
-          title: "Карта",
+          title: "Мапа",
           headerStyle: {
             height: 100,
             backgroundColor: "#ffffff",

@@ -1,55 +1,56 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import { View, TouchableOpacity } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export const CreatePostsScreen = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <Text
-        style={{
-          marginBottom: 300,
-        }}
-      >
-        CreatePostsScreen
-      </Text>
+import { NestedCreatePostsScreen } from "../nestedScreen/NestedCreatePostsScreen";
 
-      <View
+const CreateTab = createBottomTabNavigator();
+
+function CreateTabBar({ navigation }) {
+  return (
+    <View
+      style={{
+        height: 83,
+        justifyContent: "center",
+        alignItems: "center",
+
+        backgroundColor: "#FFFFFF",
+      }}
+    >
+      <TouchableOpacity
         style={{
-          alignItems: "center",
+          width: 70,
+          height: 40,
+          backgroundColor: "#F6F6F6",
+          borderRadius: 20,
           justifyContent: "center",
-          height: 83,
+          alignItems: "center",
+        }}
+        onPress={() => {
+          navigation.navigate("Home");
         }}
       >
-        <TouchableOpacity
-          style={{
-            width: 70,
-            height: 40,
-            backgroundColor: "#F6F6F6",
-            borderRadius: 20,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          onPress={() => {
-            navigation.navigate("Home");
-          }}
-        >
-          <MaterialCommunityIcons
-            name="trash-can-outline"
-            size={24}
-            color="#DADADA"
-          />
-        </TouchableOpacity>
-      </View>
+        <MaterialCommunityIcons
+          name="trash-can-outline"
+          size={24}
+          color="#DADADA"
+        />
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-});
+export const CreatePostsScreen = () => {
+  return (
+    <CreateTab.Navigator tabBar={(props) => <CreateTabBar {...props} />}>
+      <CreateTab.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CreateNested"
+        component={NestedCreatePostsScreen}
+      />
+    </CreateTab.Navigator>
+  );
+};
