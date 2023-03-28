@@ -11,9 +11,12 @@ import { LoginScreen } from "./Screens/auth/LoginScreen";
 
 import { CommentsScreen } from "./Screens/nestedScreen/CommentsScreen";
 import { MapScreen } from "./Screens/nestedScreen/MapScreen";
-
 import { PostsScreen } from "./Screens/mainScreen/PostsScreen";
 
+// ---------------
+import { CreatePostsScreen } from "./Screens/mainScreen/CreatePostsScreen";
+
+// ---------------
 const AuthStack = createStackNavigator();
 
 const HomeStack = createStackNavigator();
@@ -92,6 +95,30 @@ export default function useRoute(isAuth) {
           },
         }}
       />
+
+      {/* ------------------ */}
+
+      <HomeStack.Screen
+        name="Create"
+        component={CreatePostsScreen}
+        options={{
+          title: "Cтворити публікацію",
+          headerStyle: {
+            height: 100,
+            backgroundColor: "#ffffff",
+            borderBottomWidth: 1,
+            borderBottomColor: "#E5E5E5",
+          },
+          headerTintColor: "#212121",
+          headerTitleStyle: {
+            fontFamily: "Roboto-Bold",
+            fontSize: 17,
+            lineHeight: 22,
+          },
+        }}
+      />
+
+      {/* ------------------ */}
     </HomeStack.Navigator>
   );
 }
