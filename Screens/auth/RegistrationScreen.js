@@ -94,6 +94,7 @@ export const RegistrationScreen = ({ navigation }) => {
                     onInputFocus("login");
                   }}
                   onBlur={() => onInputBlur("login")}
+                  onEndEditing={() => setIsShowKeyboard(false)}
                   value={state.login}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, login: value }))
@@ -112,6 +113,7 @@ export const RegistrationScreen = ({ navigation }) => {
                   style={authStyle.input}
                   textAlign={"left"}
                   placeholder={"Адреса електронної пошти"}
+                  onEndEditing={() => setIsShowKeyboard(false)}
                   onFocus={() => {
                     setIsShowKeyboard(true);
                     onInputFocus("email");
@@ -142,6 +144,7 @@ export const RegistrationScreen = ({ navigation }) => {
                       onInputFocus("password");
                     }}
                     onBlur={() => onInputBlur("password")}
+                    onEndEditing={() => setIsShowKeyboard(false)}
                     value={state.password}
                     onChangeText={(value) =>
                       setState((prevState) => ({

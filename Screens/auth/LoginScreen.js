@@ -87,6 +87,7 @@ export const LoginScreen = ({ navigation }) => {
                       onInputFocus("email");
                     }}
                     onBlur={() => onInputBlur("email")}
+                    onEndEditing={() => setIsShowKeyboard(false)}
                     value={state.email}
                     onChangeText={(value) =>
                       setState((prevState) => ({ ...prevState, email: value }))
@@ -112,6 +113,7 @@ export const LoginScreen = ({ navigation }) => {
                         onInputFocus("password");
                       }}
                       onBlur={() => onInputBlur("password")}
+                      onEndEditing={() => setIsShowKeyboard(false)}
                       value={state.password}
                       onChangeText={(value) =>
                         setState((prevState) => ({
