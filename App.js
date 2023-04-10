@@ -27,7 +27,7 @@ export default function App() {
     SplashScreen.hideAsync();
   }
 
-  const routing = useRoute(null);
+  const routing = useRoute({});
 
   return <NavigationContainer>{routing}</NavigationContainer>;
 }
