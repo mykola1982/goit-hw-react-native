@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createFactory } from "react";
 import {
   StyleSheet,
   View,
@@ -11,6 +11,10 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+
+import { useDispatch } from "react-redux";
+
+import { authSingUpUser } from "../../redux/auth/authOperations";
 
 import Avatar from "../../components/Avatar/Avatar";
 import { authStyle } from "./authStyle";
@@ -27,8 +31,9 @@ export const RegistrationScreen = ({ navigation }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [secure, setSecure] = useState(true);
-
   const [hasFocus, setHasFocus] = useState(initFocus);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -49,6 +54,9 @@ export const RegistrationScreen = ({ navigation }) => {
   const onSubmit = () => {
     keyboardHide();
     console.log(state);
+
+    dispatch(authSingUpUser(state));
+    console.log("відправив сабміт");
     setState(initialState);
   };
 

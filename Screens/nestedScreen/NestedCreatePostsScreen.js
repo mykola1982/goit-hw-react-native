@@ -154,9 +154,9 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
               }
               // onEndEditing={() => setIsShowKeyboard(false)}
               placeholderColor={"#BDBDBD"}
-              // onFocus={() => {
-              //   setIsShowKeyboard(true);
-              // }}
+              //   // onFocus={() => {
+              //   //   setIsShowKeyboard(true);
+              //   // }}
             />
             <View
               style={{
@@ -197,7 +197,7 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
             disabled={createNewPost}
           >
             <Text style={createNewPost ? styles.btnText : { color: "#ffffff" }}>
-              Опубликовать
+              Опублікувати
             </Text>
           </TouchableOpacity>
         </View>

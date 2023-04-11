@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   View,
@@ -14,6 +15,8 @@ import {
 
 import { authStyle } from "./authStyle";
 
+import { authSingInUser } from "../../redux/auth/authOperations";
+
 const initialState = {
   email: "",
   password: "",
@@ -27,6 +30,8 @@ export const LoginScreen = ({ navigation }) => {
   const [secure, setSecure] = useState(true);
 
   const [hasFocus, setHasFocus] = useState(initFocus);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -46,8 +51,9 @@ export const LoginScreen = ({ navigation }) => {
 
   const onSubmit = () => {
     keyboardHide();
-    console.log(state);
+    console.log("submit login", state);
     setState(initialState);
+    dispatch(authSingInUser(state));
   };
 
   return (

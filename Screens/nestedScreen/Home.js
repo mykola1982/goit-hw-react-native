@@ -33,7 +33,7 @@ export const Home = ({ navigation, route }) => {
         </View>
 
         {posts.length > 0 && (
-          <View style={{ marginBottom: 40 }}>
+          <View style={{ marginBottom: 100 }}>
             <FlatList
               data={posts}
               keyExtractor={(item, indx) => indx.toString()}
@@ -46,7 +46,7 @@ export const Home = ({ navigation, route }) => {
                       fontFamily: "Roboto-Medium",
                     }}
                   >
-                    {item.placeName}
+                    {item.name}
                   </Text>
 
                   <View style={styles.locationCommentContainer}>
@@ -102,7 +102,8 @@ export const Home = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.75,
+
     backgroundColor: "#FFFFFF",
   },
 
