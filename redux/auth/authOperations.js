@@ -9,10 +9,11 @@ import {
 
 import { authSlice } from "../auth/authReducer";
 
+const { authSignOut, updateUserProfile, authStateChange } = authSlice.actions;
+
 export const authSingUpUser =
-  ({ email, login, password }) =>
+  ({ email, login, password, avatar }) =>
   async (dispatch, getState) => {
-    console.log("email, password, login", email, password, login);
     try {
       const response = await createUserWithEmailAndPassword(
         authFirebase,
@@ -22,9 +23,22 @@ export const authSingUpUser =
 
       const user = response.user;
 
-      dispatch(authSlice.actions.updateUserProfile({ userId: user.uid }));
+      await updateProfile(authFirebase.currentUser, {
+        displayName: login,
+        userId: user.uid,
+        photoURL: avatar,
+      });
 
-      console.log("user", user);
+      const { displayName, uid, photoURL } = await authFirebase.currentUser;
+
+      const userUpdateProfile = {
+        userName: displayName,
+        userId: uid,
+        userAvatar: photoURL,
+        userEmail: email,
+      };
+
+      dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
@@ -33,21 +47,81 @@ export const authSingUpUser =
 
 export const authSingInUser =
   ({ email, password }) =>
-  async (dispath, getState) => {
+  async (dispatch, getState) => {
     console.log("email,  password ", email, password);
     try {
-      const response = await signInWithEmailAndPassword(
+      const user = await signInWithEmailAndPassword(
         authFirebase,
         email,
         password
       );
 
-      const user = response.user;
-      console.log("user", user);
+      const { displayName, uid, photoURL } = user.user;
+
+      const userUpdateProfile = {
+        userName: displayName,
+        userId: uid,
+        userAvatar: photoURL,
+        userEmail: email,
+      };
+
+      dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {
       console.log("error", error);
       console.log("error.message", error.message);
     }
   };
 
-export const authSingOutUser = () => async (dispath, getState) => {};
+export const deleteAvatar = () => async (dispatch, getState) => {
+  try {
+    console.log(authFirebase.currentUser);
+    await updateProfile(authFirebase.currentUser, {
+      displayName,
+      userId: uid,
+      photoURL: null,
+    });
+
+    const { displayName, uid, photoURL, email } =
+      await authFirebase.currentUser;
+
+    console.log("photo", photoURL);
+
+    const userUpdateProfile = {
+      userName: displayName,
+      userId: uid,
+      userAvatar: null,
+      userEmail: email,
+    };
+
+    dispatch(updateUserProfile(userUpdateProfile));
+  } catch (error) {
+    console.log("error", error);
+    console.log("error.code", error.code);
+    console.log("error.message", error.message);
+  }
+};
+
+export const authSingOutUser = () => async (dispatch, getState) => {
+  try {
+    await signOut(authFirebase);
+    dispatch(authSignOut());
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+export const authStateChangeUser = () => async (dispatch, getState) => {
+  await onAuthStateChanged(authFirebase, (user) => {
+    if (user) {
+      const userUpdateProfile = {
+        userName: user.displayName,
+        userId: user.uid,
+        userAvatar: user.photoURL,
+        userEmail: user.email,
+      };
+
+      dispatch(authStateChange({ stateChange: true }));
+      dispatch(updateUserProfile(userUpdateProfile));
+    }
+  });
+};
