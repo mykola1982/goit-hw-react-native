@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -20,6 +21,19 @@ import * as Location from "expo-location";
 import { FontAwesome } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+import { db, storage } from "../../firebase/config";
+import { selectAuth } from "../../redux/auth/authSelectors";
+
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "@firebase/firestore";
+
 const initialState = {
   photo: null,
   location: "",
@@ -31,6 +45,12 @@ const initialState = {
 
 export const NestedCreatePostsScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
+  const [load, setLoad] = useState(false);
+
+  //  const [hasPermission, setHasPermission] = useState(null);
+  //  const [isCameraReady, setIsCameraReady] = useState(false);
+  //  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  //  const [errorMsg, setErrorMsg] = useState(null);
 
   // const [hasPermission, setHasPermission] = useState(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
@@ -39,6 +59,7 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
 
   const cameraRef = useRef();
   const { photo, name, location, placeName, id } = state;
+  const { userId, userName } = useSelector(selectAuth);
 
   useEffect(() => {
     (async () => {
@@ -61,6 +82,51 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
       }
     })();
   }, []);
+
+  const uploadPhotoToServer = async () => {
+    setLoad(true);
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const imgId = Date.now().toString();
+
+      const storageRef = ref(storage, `images/${imgId}`);
+      await uploadBytes(storageRef, file);
+
+      const urlRef = await getDownloadURL(storageRef);
+      setLoad(false);
+
+      return urlRef;
+    } catch (error) {
+      console.error(error);
+      setLoad(false);
+      setError(error.message);
+    }
+  };
+
+  const uploadPostToServer = async () => {
+    setLoad(true);
+    try {
+      const uploadPhoto = await uploadPhotoToServer();
+      const collectionRef = doc(collection(db, "posts"));
+
+      await setDoc(collectionRef, {
+        photo: uploadPhoto,
+        location,
+        placeName: placeName,
+        comments: 0,
+        userId,
+        userName,
+        timestamp: serverTimestamp(),
+      });
+
+      setLoad(false);
+    } catch (error) {
+      console.log("upload post", error);
+      setLoad(false);
+      setError(`upload post ${error.message}`);
+    }
+  };
 
   const takePhoto = async () => {
     const postId = Date.now().toString();
@@ -94,21 +160,25 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
   };
 
   const publishPost = async () => {
-    setState((prevState) => ({
-      ...prevState,
-      location,
-    }));
+    uploadPostToServer();
+    // uploadPhotoToServer();
+    // uploadPhotoToServer();
+    // setState((prevState) => ({
+    //   ...prevState,
+    //   location,
+    // }));
 
-    console.log(state);
+    // console.log(state);
     navigation.navigate("Home", state);
     setState(initialState);
     keyboardHide();
-    cancelPreview();
+    // cancelPreview();
   };
 
   const createNewPost =
     name === "" || photo === "" || placeName === "" || location === "";
 
+  console.log("createNewPost", createNewPost);
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <ScrollView style={styles.container}>
