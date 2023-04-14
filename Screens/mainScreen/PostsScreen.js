@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { View, Button, TouchableOpacity, Text } from "react-native";
 
@@ -9,6 +10,7 @@ import { Feather, SimpleLineIcons } from "@expo/vector-icons";
 import { ProfileScreen } from "./ProfileScreen";
 
 import { Home } from "../nestedScreen/Home";
+import { logOut } from "../../redux/auth/authOperations";
 
 const MainTab = createBottomTabNavigator();
 
@@ -76,6 +78,7 @@ function MyTabBar({ navigation }) {
 }
 
 export const PostsScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   return (
     <MainTab.Navigator tabBar={(props) => <MyTabBar {...props} />}>
       <MainTab.Screen
@@ -95,14 +98,23 @@ export const PostsScreen = ({ navigation }) => {
           },
 
           headerRight: () => (
-            <View
+            // <TouchableOpacity onPress={() => dispatch(logOut())}>
+            //   <SimpleLineIcons
+            //     style={{ marginRight: 18 }}
+            //     name="login"
+            //     size={24}
+            //     color="#BDBDBD"
+            //   />
+            // </TouchableOpacity>
+            <TouchableOpacity
               style={{
                 marginRight: 20,
               }}
-              onPress={() => alert("This is a button logout!")}
+              // onPress={() => alert("This is a button logout!")}
+              onPress={() => dispatch(logOut())}
             >
               <Feather name="log-out" size={24} color="#BDBDBD" />
-            </View>
+            </TouchableOpacity>
           ),
         }}
         name="Home"

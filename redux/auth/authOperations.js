@@ -101,7 +101,7 @@ export const deleteAvatar = () => async (dispatch, getState) => {
   }
 };
 
-export const authSingOutUser = () => async (dispatch, getState) => {
+export const logOut = () => async (dispatch, getState) => {
   try {
     await signOut(authFirebase);
     dispatch(authSignOut());

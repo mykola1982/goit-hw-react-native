@@ -1,28 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 
-import { NavigationContainer } from "@react-navigation/native";
-
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 import useRoute from "./router";
 import { store } from "./Screens/store";
+import { RootSiblingParent } from "react-native-root-siblings";
 
-import { authFirebase } from "./firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import Main from "./components/Main";
 
 export default function App() {
   const [fontsLoader] = useFonts({
     "Roboto-Bold": require("./assets/fonts/Roboto-Bold.ttf"),
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
-  });
-
-  const [user, setUser] = useState(null);
-  onAuthStateChanged(authFirebase, (user) => {
-    console.log("user change", user);
-    setUser(user);
   });
 
   useEffect(() => {
@@ -38,11 +30,11 @@ export default function App() {
     SplashScreen.hideAsync();
   }
 
-  const routing = useRoute(user);
-
   return (
     <Provider store={store}>
-      <NavigationContainer>{routing}</NavigationContainer>
+      <RootSiblingParent>
+        <Main />
+      </RootSiblingParent>
     </Provider>
   );
 }
