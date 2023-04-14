@@ -169,7 +169,10 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
     // }));
 
     // console.log(state);
-    navigation.navigate("Home", state);
+    navigation.navigate(
+      "Home"
+      // ,      state
+    );
     setState(initialState);
     keyboardHide();
     // cancelPreview();

@@ -10,19 +10,25 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from "react-native";
 
 import { useDispatch } from "react-redux";
 
 import { authSingUpUser } from "../../redux/auth/authOperations";
+import { storage } from "../../firebase/config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { AntDesign } from "@expo/vector-icons";
 
-import Avatar from "../../components/Avatar/Avatar";
+import * as ImagePicker from "expo-image-picker";
+
 import { authStyle } from "./authStyle";
 
 const initialState = {
   login: "",
   email: "",
   password: "",
+  avatar: "",
 };
 
 const initFocus = { login: false, email: false, password: false };
@@ -33,7 +39,35 @@ export const RegistrationScreen = ({ navigation }) => {
   const [secure, setSecure] = useState(true);
   const [hasFocus, setHasFocus] = useState(initFocus);
 
+  const [isNotShownPassword, setIsNotShownPassword] = useState(true);
+
+  const { avatar } = state;
+  const [load, setLoad] = useState(false);
+  const [error, setError] = useState(null);
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      setLoad(true);
+      try {
+        if (Platform.OS !== "web") {
+          const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+          setHasPermission(status === "granted");
+          if (status !== "granted") {
+            console.log(
+              "Sorry, we need camera roll permissions to make this work!"
+            );
+          }
+          setLoad(false);
+        }
+      } catch (error) {
+        setLoad(false);
+        setError(error.message);
+      }
+    })();
+  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -51,13 +85,67 @@ export const RegistrationScreen = ({ navigation }) => {
     setHasFocus((prevState) => ({ ...prevState, [name]: false }));
   };
 
-  const onSubmit = () => {
-    keyboardHide();
-    console.log(state);
+  const uploadAvatarFromGallery = async () => {
+    setLoad(true);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        quality: 1,
+      });
+      console.log("result.assets[0].uri,", result.assets[0].uri);
+      if (!result.canceled) {
+        setState((prevState) => ({
+          ...prevState,
+          avatar: result.assets[0].uri,
+        }));
+      }
+      setLoad(false);
+    } catch (error) {
+      console.log("Upload avatar error", error.message);
+      setLoad(false);
+      setError(`Upload avatar error ${error.message}`);
+    }
+  };
 
-    dispatch(authSingUpUser(state));
-    console.log("відправив сабміт");
-    setState(initialState);
+  const uploadAvatarToServer = async () => {
+    setLoad(true);
+    try {
+      const response = await fetch(avatar);
+      const file = await response.blob();
+
+      const avatarId = Date.now().toString();
+
+      const storageRef = ref(storage, `avatars/${avatarId}`);
+      await uploadBytes(storageRef, file);
+
+      const avatarRef = await getDownloadURL(storageRef);
+      setLoad(false);
+      return avatarRef;
+    } catch (error) {
+      console.log("Upload avatar to server error", error.message);
+      setLoad(false);
+      setError(`Upload avatar to server error ${error.message}`);
+    }
+  };
+
+  const onSubmit = async () => {
+    setLoad(true);
+
+    try {
+      const avatarRef = await uploadAvatarToServer();
+      setIsShowKeyboard(false);
+      Keyboard.dismiss();
+      keyboardHide();
+      dispatch(authSingUpUser({ ...state, avatar: avatarRef }));
+
+      setState(initialState);
+      setLoad(false);
+    } catch (error) {
+      console.log("Upload avatar to server error", error.message);
+      setLoad(false);
+      setError(`Upload avatar to server error ${error.message}`);
+    }
   };
 
   return (
@@ -78,8 +166,24 @@ export const RegistrationScreen = ({ navigation }) => {
               }}
             >
               <View style={styles.avatarWrapper}>
-                <View style={styles.avatar}>
-                  <Avatar />
+                <View style={styles.userImage}>
+                  {/* {avatar && (
+                    <Image
+                      src={avatar}
+                      alt="Your avatar"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 16,
+                      }}
+                    />
+                  )} */}
+                  <TouchableOpacity
+                    style={styles.btnAdd}
+                    onPress={uploadAvatarFromGallery}
+                  >
+                    <AntDesign name="pluscircleo" size={24} color={"#FF6C00"} />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -237,5 +341,21 @@ const styles = StyleSheet.create({
   },
   avatar: {
     position: "absolute",
+  },
+
+  userImage: {
+    position: "absolute",
+    top: -60,
+
+    width: 120,
+    height: 120,
+    borderRadius: 16,
+    backgroundColor: "#F6F6F6",
+  },
+  btnAdd: {
+    position: "absolute",
+    bottom: 14,
+    right: -12.5,
+    maxWidth: 25,
   },
 });

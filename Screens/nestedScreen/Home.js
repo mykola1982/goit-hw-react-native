@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -12,28 +13,63 @@ import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import photo from "../../assets/photo.jpg";
 
+import {
+  selectAuthEmail,
+  selectAvatar,
+  selectUserName,
+} from "../../redux/auth/authSelectors";
+import { db } from "../../firebase/config";
+import { collection, getDocs } from "firebase/firestore";
+
 export const Home = ({ navigation, route }) => {
+  const email = useSelector(selectAuthEmail);
+  const avatar = useSelector(selectAvatar);
+  const name = useSelector(selectUserName);
+  const [load, setLoad] = useState(false);
+  const [error, setError] = useState(null);
+
   const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
+
+  const getAllPosts = async () => {
+    setLoad(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      querySnapshot.forEach((doc) => {
+        setPosts((prevState) => [...prevState, { id: doc.id, ...doc.data() }]);
+      });
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      setError(error.message);
+    }
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts();
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.mainContainer}>
         <View style={styles.userContent}>
-          <Image style={styles.userAvatar} source={photo} />
+          {avatar ? (
+            <Image style={styles.userAvatar} source={{ uri: avatar }} />
+          ) : (
+            <Image style={styles.userAvatar} source={photo} />
+          )}
           <View style={styles.textContent}>
-            <Text style={styles.userName}>Natali Romanova</Text>
-            <Text style={styles.userEmail}>natali@mail.com</Text>
+            <Text style={styles.userName}>{name}</Text>
+            <Text style={styles.userEmail}>{email}</Text>
           </View>
         </View>
 
         {posts.length > 0 && (
-          <View style={{ marginBottom: 100 }}>
+          <View
+            style={{
+              marginBottom: 100,
+            }}
+          >
             <FlatList
               data={posts}
               keyExtractor={(item, indx) => indx.toString()}
@@ -102,8 +138,8 @@ export const Home = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.75,
-
+    flex: 1,
+    paddingBottom: 150,
     backgroundColor: "#FFFFFF",
   },
 
@@ -169,6 +205,7 @@ const styles = StyleSheet.create({
   location: {
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 12,
   },
   locationText: {
     fontSize: 16,
