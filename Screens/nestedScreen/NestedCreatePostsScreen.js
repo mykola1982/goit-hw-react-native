@@ -15,8 +15,8 @@ import {
 
 import { Camera } from "expo-camera";
 
-import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
+import * as ImagePicker from "expo-image-picker";
 
 import { FontAwesome } from "@expo/vector-icons";
 import { EvilIcons } from "@expo/vector-icons";
@@ -59,8 +59,7 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
         setHasPermission(status === "granted");
         if (status !== "granted") {
           console.log(
@@ -120,7 +119,7 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
       });
 
       Toast.show("Публікація добавленa", {
-        backgroundColor: "gren",
+        backgroundColor: "green",
         duration: 3000,
         position: 50,
       });

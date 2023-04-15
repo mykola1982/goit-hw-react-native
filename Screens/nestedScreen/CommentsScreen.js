@@ -62,6 +62,15 @@ export const CommentsScreen = ({ route }) => {
     const date = new Date().toLocaleDateString();
     const time = new Date().toLocaleTimeString();
     setLoad(true);
+    if (text.trim() === "") {
+      Toast.show("Коментар не може бути порожній.", {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
+      setLoad(false);
+      return;
+    }
 
     try {
       const dbRef = doc(db, "posts", postId);
@@ -75,6 +84,11 @@ export const CommentsScreen = ({ route }) => {
       };
       await updateDoc(dbRef, { comments: comments.length + 1 });
       await addDoc(collection(dbRef, "comments"), commentUploadObject);
+      Toast.show("Коментар добавлено.", {
+        backgroundColor: "green",
+        duration: 3000,
+        position: 50,
+      });
       setLoad(false);
     } catch (error) {
       setError(`SendComment Error ${error.message}`);
@@ -121,7 +135,7 @@ export const CommentsScreen = ({ route }) => {
       <View style={styles.container}>
         <>
           <Image style={styles.image} source={{ uri: photo }} />
-          <View style={{ height: 250 }}>
+          <View style={{ height: 300 }}>
             <SafeAreaView style={{ flex: 1 }}>
               <FlatList
                 data={comments}
@@ -184,6 +198,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
+
     justifyContent: "flex-end",
   },
   commentForm: {

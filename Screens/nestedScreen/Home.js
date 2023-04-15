@@ -12,6 +12,8 @@ import {
 import { EvilIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import photo from "../../assets/photo.jpg";
+import Toast from "react-native-root-toast";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import {
   selectAuthEmail,
@@ -31,6 +33,10 @@ export const Home = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
   const getAllPosts = async () => {
     setLoad(true);
     try {
@@ -42,12 +48,13 @@ export const Home = ({ navigation, route }) => {
     } catch (error) {
       setLoad(false);
       setError(error.message);
+      Toast.show(`${error}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
-
-  useEffect(() => {
-    getAllPosts();
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -132,6 +139,13 @@ export const Home = ({ navigation, route }) => {
           </View>
         )}
       </View>
+      {load && (
+        <Spinner
+          visible={true}
+          textContent={"Loading..."}
+          textStyle={{ color: "#FFF" }}
+        />
+      )}
     </View>
   );
 };
