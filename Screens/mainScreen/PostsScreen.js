@@ -98,19 +98,10 @@ export const PostsScreen = ({ navigation }) => {
           },
 
           headerRight: () => (
-            // <TouchableOpacity onPress={() => dispatch(logOut())}>
-            //   <SimpleLineIcons
-            //     style={{ marginRight: 18 }}
-            //     name="login"
-            //     size={24}
-            //     color="#BDBDBD"
-            //   />
-            // </TouchableOpacity>
             <TouchableOpacity
               style={{
                 marginRight: 20,
               }}
-              // onPress={() => alert("This is a button logout!")}
               onPress={() => dispatch(logOut())}
             >
               <Feather name="log-out" size={24} color="#BDBDBD" />

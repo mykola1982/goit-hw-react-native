@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Provider } from "react-redux";
 
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
-import useRoute from "./router";
-import { store } from "./Screens/store";
+import { store } from "./redux/store";
 import { RootSiblingParent } from "react-native-root-siblings";
 
 import Main from "./components/Main";

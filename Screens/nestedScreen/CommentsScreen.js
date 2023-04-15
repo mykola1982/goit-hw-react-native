@@ -31,6 +31,8 @@ import {
   updateDoc,
   addDoc,
 } from "firebase/firestore";
+import Toast from "react-native-root-toast";
+import Spinner from "react-native-loading-spinner-overlay";
 
 export const CommentsScreen = ({ route }) => {
   const [text, setText] = useState("");
@@ -75,8 +77,12 @@ export const CommentsScreen = ({ route }) => {
       await addDoc(collection(dbRef, "comments"), commentUploadObject);
       setLoad(false);
     } catch (error) {
-      console.log("SendComment Error", error.message);
       setError(`SendComment Error ${error.message}`);
+      Toast.show(`${error}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
       setLoad(false);
     }
   };
@@ -92,8 +98,12 @@ export const CommentsScreen = ({ route }) => {
         setLoad(false);
       });
     } catch (error) {
-      console.log("fetchComments Error", error.message);
       setError(`fetchComments Error ${error.message}`);
+      Toast.show(`${error}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
       setLoad(false);
     }
   };
@@ -109,69 +119,50 @@ export const CommentsScreen = ({ route }) => {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        {!error && !load && (
-          <>
-            <Image style={styles.image} source={{ uri: photo }} />
-            <View style={{ height: 250 }}>
-              <SafeAreaView style={{ flex: 1 }}>
-                <FlatList
-                  data={comments}
-                  keyExtractor={comments.id}
-                  renderItem={renderItem}
-                />
-              </SafeAreaView>
-            </View>
+        <>
+          <Image style={styles.image} source={{ uri: photo }} />
+          <View style={{ height: 250 }}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <FlatList
+                data={comments}
+                keyExtractor={comments.id}
+                renderItem={renderItem}
+              />
+            </SafeAreaView>
+          </View>
 
-            <View
-              style={{
-                ...styles.formContainer,
-                // marginBottom: isShowKeyboard ? 100 : 10,
-              }}
-            >
-              <View style={styles.commentForm}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Добавити комментар..."
-                  value={text}
-                  onChangeText={setText}
-                  onFocus={() => {
-                    console.log("onFocus", isShowKeyboard);
-                    return setIsShowKeyboard(true), console.log();
-                  }}
-                  onBlur={() => setIsShowKeyboard(false)}
+          <View
+            style={{
+              ...styles.formContainer,
+              // marginBottom: isShowKeyboard ? 100 : 10,
+            }}
+          >
+            <View style={styles.commentForm}>
+              <TextInput
+                style={styles.input}
+                placeholder="Добавити комментар..."
+                value={text}
+                onChangeText={setText}
+                onFocus={() => setIsShowKeyboard(true)}
+                onBlur={() => setIsShowKeyboard(false)}
+              />
+              <TouchableOpacity style={styles.sendBtn} onPress={createPost}>
+                <MaterialCommunityIcons
+                  name="send-circle"
+                  size={38}
+                  color="#FF6C00"
                 />
-                <TouchableOpacity style={styles.sendBtn} onPress={createPost}>
-                  <MaterialCommunityIcons
-                    name="send-circle"
-                    size={38}
-                    color="#FF6C00"
-                  />
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
-          </>
-        )}
+          </View>
+        </>
+
         {load && (
-          <View
-            style={{
-              flex: 1,
-              alignContent: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text>Loading...</Text>
-          </View>
-        )}
-        {!load && error && (
-          <View
-            style={{
-              flex: 1,
-              alignContent: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Text>{error}</Text>
-          </View>
+          <Spinner
+            visible={true}
+            textContent={"Loading..."}
+            textStyle={{ color: "#FFF" }}
+          />
         )}
       </View>
     </TouchableWithoutFeedback>

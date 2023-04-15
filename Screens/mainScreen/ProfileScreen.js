@@ -37,7 +37,6 @@ export const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const signOut = () => {
-    console.log("exit");
     dispatch(logOut());
   };
 

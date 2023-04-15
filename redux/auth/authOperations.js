@@ -6,6 +6,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import Toast from "react-native-root-toast";
 
 import { authSlice } from "../auth/authReducer";
 
@@ -40,15 +41,17 @@ export const authSingUpUser =
 
       dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {
-      console.log("error", error);
-      console.log("error.message", error.message);
+      Toast.show(`${error.message}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
 
 export const authSingInUser =
   ({ email, password }) =>
   async (dispatch, getState) => {
-    console.log("email,  password ", email, password);
     try {
       const user = await signInWithEmailAndPassword(
         authFirebase,
@@ -67,8 +70,11 @@ export const authSingInUser =
 
       dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {
-      console.log("error", error);
-      console.log("error.message", error.message);
+      Toast.show(`${error.message}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
 
@@ -95,9 +101,11 @@ export const deleteAvatar = () => async (dispatch, getState) => {
 
     dispatch(updateUserProfile(userUpdateProfile));
   } catch (error) {
-    console.log("error", error);
-    console.log("error.code", error.code);
-    console.log("error.message", error.message);
+    Toast.show(`${error.message}`, {
+      backgroundColor: "red",
+      duration: 3000,
+      position: 50,
+    });
   }
 };
 
@@ -106,7 +114,11 @@ export const logOut = () => async (dispatch, getState) => {
     await signOut(authFirebase);
     dispatch(authSignOut());
   } catch (error) {
-    console.log("error", error);
+    Toast.show(`${error.message}`, {
+      backgroundColor: "red",
+      duration: 3000,
+      position: 50,
+    });
   }
 };
 

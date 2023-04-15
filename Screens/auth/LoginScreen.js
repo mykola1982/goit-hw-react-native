@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   StyleSheet,
@@ -16,6 +16,7 @@ import {
 import { authStyle } from "./authStyle";
 
 import { authSingInUser } from "../../redux/auth/authOperations";
+import Toast from "react-native-root-toast";
 
 const initialState = {
   email: "",
@@ -51,9 +52,18 @@ export const LoginScreen = ({ navigation }) => {
 
   const onSubmit = () => {
     keyboardHide();
-    console.log("submit login", state);
-    setState(initialState);
+    if (state.email === "" || state.password === "") {
+      Toast.show("Email та Password повинні бути заповнені.", {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
+
+      return;
+    }
+
     dispatch(authSingInUser(state));
+    setState(initialState);
   };
 
   return (

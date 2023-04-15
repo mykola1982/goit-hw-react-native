@@ -25,6 +25,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { db, storage } from "../../firebase/config";
 import { selectAuth } from "../../redux/auth/authSelectors";
+import Toast from "react-native-root-toast";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import {
   addDoc,
@@ -46,16 +48,9 @@ const initialState = {
 export const NestedCreatePostsScreen = ({ navigation }) => {
   const [state, setState] = useState(initialState);
   const [load, setLoad] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
 
-  //  const [hasPermission, setHasPermission] = useState(null);
-  //  const [isCameraReady, setIsCameraReady] = useState(false);
-  //  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  //  const [errorMsg, setErrorMsg] = useState(null);
-
-  // const [hasPermission, setHasPermission] = useState(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
-
-  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   const cameraRef = useRef();
   const { photo, name, location, placeName, id } = state;
@@ -98,9 +93,13 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
 
       return urlRef;
     } catch (error) {
-      console.error(error);
       setLoad(false);
       setError(error.message);
+      Toast.show(`${error}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
 
@@ -120,11 +119,21 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
         timestamp: serverTimestamp(),
       });
 
+      Toast.show("Публікація добавленa", {
+        backgroundColor: "gren",
+        duration: 3000,
+        position: 50,
+      });
+
       setLoad(false);
     } catch (error) {
-      console.log("upload post", error);
       setLoad(false);
       setError(`upload post ${error.message}`);
+      Toast.show(`${error}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
 
@@ -150,131 +159,142 @@ export const NestedCreatePostsScreen = ({ navigation }) => {
         location: locationCoords.coords,
       }));
     } catch (error) {
-      console.log("take picture", error.message);
+      Toast.show(`${error.message}`, {
+        backgroundColor: "red",
+        duration: 3000,
+        position: 50,
+      });
     }
   };
 
   const keyboardHide = () => {
-    // setIsShowKeyboard(false);
     Keyboard.dismiss();
   };
 
   const publishPost = async () => {
     uploadPostToServer();
-    // uploadPhotoToServer();
-    // uploadPhotoToServer();
-    // setState((prevState) => ({
-    //   ...prevState,
-    //   location,
-    // }));
 
-    // console.log(state);
-    navigation.navigate(
-      "Home"
-      // ,      state
-    );
+    navigation.navigate("Home");
     setState(initialState);
     keyboardHide();
-    // cancelPreview();
   };
 
   const createNewPost =
     name === "" || photo === "" || placeName === "" || location === "";
 
-  console.log("createNewPost", createNewPost);
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
-      <ScrollView style={styles.container}>
-        <View style={styles.mainContainer}>
-          <View>
+      <>
+        <ScrollView style={styles.container}>
+          <View style={styles.mainContainer}>
+            <View>
+              {photo ? (
+                <View style={styles.photoContainer}>
+                  <Image
+                    style={styles.imageBackground}
+                    source={{ uri: photo }}
+                  />
+
+                  <TouchableOpacity
+                    style={styles.photoIcon}
+                    onPress={takePhoto}
+                  >
+                    <FontAwesome name="camera" size={24} color="#BDBDBD" />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <Camera
+                  style={styles.photoContainer}
+                  ref={cameraRef}
+                  onCameraReady={() => {
+                    setIsCameraReady(true);
+                  }}
+                >
+                  <TouchableOpacity
+                    style={styles.photoIcon}
+                    onPress={takePhoto}
+                  >
+                    <FontAwesome name="camera" size={24} color="#BDBDBD" />
+                  </TouchableOpacity>
+                </Camera>
+              )}
+            </View>
+
             {photo ? (
-              <View style={styles.photoContainer}>
-                <Image style={styles.imageBackground} source={{ uri: photo }} />
-
-                <TouchableOpacity style={styles.photoIcon} onPress={takePhoto}>
-                  <FontAwesome name="camera" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.textBottom}>Редагувати фото</Text>
             ) : (
-              <Camera
-                style={styles.photoContainer}
-                ref={cameraRef}
-                onCameraReady={() => {
-                  setIsCameraReady(true);
-                }}
-              >
-                <TouchableOpacity style={styles.photoIcon} onPress={takePhoto}>
-                  <FontAwesome name="camera" size={24} color="#BDBDBD" />
-                </TouchableOpacity>
-              </Camera>
+              <Text style={styles.textBottom}>Загрузити фото</Text>
             )}
-          </View>
 
-          {photo ? (
-            <Text style={styles.textBottom}>Редагувати фото</Text>
-          ) : (
-            <Text style={styles.textBottom}>Загрузити фото</Text>
-          )}
-
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              textAlign={"left"}
-              placeholder={"Назва ..."}
-              value={name}
-              onChangeText={(value) =>
-                setState((prevState) => ({ ...prevState, name: value }))
-              }
-              // onEndEditing={() => setIsShowKeyboard(false)}
-              placeholderColor={"#BDBDBD"}
-              //   // onFocus={() => {
-              //   //   setIsShowKeyboard(true);
-              //   // }}
-            />
-            <View
-              style={{
-                ...styles.input,
-                marginBottom: 32,
-                flexDirection: "row",
-              }}
-            >
-              <EvilIcons name="location" size={24} color="#BDBDBD" />
+            <View style={styles.form}>
               <TextInput
-                style={{
-                  fontSize: 16,
-                  lineHeight: 19,
-                  flex: 1,
-                }}
+                style={styles.input}
                 textAlign={"left"}
-                value={placeName}
+                placeholder={"Назва ..."}
+                value={name}
                 onChangeText={(value) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    placeName: value,
-                  }))
+                  setState((prevState) => ({ ...prevState, name: value }))
                 }
                 // onEndEditing={() => setIsShowKeyboard(false)}
-                placeholder={"Місцевість ..."}
                 placeholderColor={"#BDBDBD"}
-                // onFocus={() => {
-                //   setIsShowKeyboard(true);
-                // }}
+                //   // onFocus={() => {
+                //   //   setIsShowKeyboard(true);
+                //   // }}
               />
+              <View
+                style={{
+                  ...styles.input,
+                  marginBottom: 32,
+                  flexDirection: "row",
+                }}
+              >
+                <EvilIcons name="location" size={24} color="#BDBDBD" />
+                <TextInput
+                  style={{
+                    fontSize: 16,
+                    lineHeight: 19,
+                    flex: 1,
+                  }}
+                  textAlign={"left"}
+                  value={placeName}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      placeName: value,
+                    }))
+                  }
+                  // onEndEditing={() => setIsShowKeyboard(false)}
+                  placeholder={"Місцевість ..."}
+                  placeholderColor={"#BDBDBD"}
+                  // onFocus={() => {
+                  //   setIsShowKeyboard(true);
+                  // }}
+                />
+              </View>
             </View>
+            <TouchableOpacity
+              style={
+                createNewPost ? styles.btnAddScreen : styles.btnAddScreenActive
+              }
+              onPress={publishPost}
+              disabled={createNewPost}
+            >
+              <Text
+                style={createNewPost ? styles.btnText : { color: "#ffffff" }}
+              >
+                Опублікувати
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={
-              createNewPost ? styles.btnAddScreen : styles.btnAddScreenActive
-            }
-            onPress={publishPost}
-            disabled={createNewPost}
-          >
-            <Text style={createNewPost ? styles.btnText : { color: "#ffffff" }}>
-              Опублікувати
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+        {load && (
+          <Spinner
+            visible={true}
+            textContent={"Loading..."}
+            textStyle={{ color: "#FFF" }}
+          />
+        )}
+      </>
     </TouchableWithoutFeedback>
   );
 };
